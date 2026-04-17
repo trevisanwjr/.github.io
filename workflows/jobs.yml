@@ -1,0 +1,30 @@
+name: Gerar vagas automaticamente
+
+on:
+  schedule:
+    - cron: '0 9 * * *' # todo dia às 09h
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clonar repo
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Rodar script
+        run: python scripts/generate_jobs.py
+
+      - name: Commit e push
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add .
+          git commit -m "Atualizando vagas automaticamente" || echo "Nada para commitar"
+          git push
